@@ -19,7 +19,7 @@ testGrids = [testgridArchetype, collect(testgridArchetype)]
             f2 = @inferred func(testdata, testgrid[2] - testgrid[1])
             @test isapprox(f1, f2, atol = tolerance)
         end
-    end #function
+    end
 
     @testset "Known Exact Norms" for func in WN.exportedNorms
         @testset "Norm of Zero is Zero" begin
@@ -37,8 +37,8 @@ testGrids = [testgridArchetype, collect(testgridArchetype)]
             f2 = @inferred func(testdata, testgrid[2] - testgrid[1])
             @test f1 >= 0.0
             @test f2 >= 0.0
-        end # for testfunc
-    end # for sobnormsfunc
+        end
+    end
 
     # Other known values
     knownValues = (
@@ -68,4 +68,23 @@ testGrids = [testgridArchetype, collect(testgridArchetype)]
         v2 = @inferred func(testZerosMat, testgrid, testgrid)
         @test isapprox(v2, 0.0)
     end
+end
+
+@testset "Edge case regression tests" begin
+    twoValGrid = [0.0, 1.0]
+    @test isnan(WN.norm_w22_only(twoValGrid, [-1.0, 1.0]))
+    @test isnan(WN.norm_w22_only(twoValGrid, 1e-1))
+
+    threeValGrid1 = [0.0, 1.0, 2.0]
+    @test isapprox(WN.norm_w22_only(threeValGrid1, [1.0, 2.0, 3.0]), 0.0, atol=tolerance)
+    @test isapprox(WN.norm_w22_only(threeValGrid1, 1), 0.0, atol=tolerance)
+
+    threeValGrid2 = [1.0, 0.0, 1.0]
+    @test WN.norm_w22_only(threeValGrid2, [1.0, 2.0, 3.0]) >= 0
+    @test WN.norm_w22_only(threeValGrid2, 1) >= 0
+    @test WN.norm_w22_only(-threeValGrid2, [1.0, 2.0, 3.0]) >= 0
+    @test WN.norm_w22_only(-threeValGrid2, 1) >= 0
+
+    @test WN.norm_w22_only(-threeValGrid2, 1) == WN.norm_w22_only(threeValGrid2, 1)
+    @test WN.norm_w22_only(-threeValGrid2, [1.0, 2.0, 3.0]) == WN.norm_w22_only(threeValGrid2, [1.0, 2.0, 3.0])
 end

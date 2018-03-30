@@ -14,6 +14,7 @@ const WN = WeightedNorms
 
 const verbose = false
 
-@testset "Norms" begin
+@testset "WeightedNorms" begin
     include("norms.jl")
+    include("traces.jl")
 end

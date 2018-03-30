@@ -157,16 +157,15 @@ normsq_w22(x::Vector, dx::Real) = normsq_w21(x, dx) + normsq_w22_only(x, dx)
 norm_w22(x::Vector, grid::Vector) = sqrt(normsq_w22(x, grid))
 norm_w22(x::Vector, dx::Real) = sqrt(normsq_w22(x, dx))
 
-norm_null{T<:Real}(x::Vector{T}, ::ANY) = zero(T)
-
+#TODO: Either generalize norms to work against any AbstractArray, or call this
+# exportedVectorNorms.
 const exportedNorms = [norm_l2_only,
                        normsq_w21, norm_w21, normsq_w21_only, norm_w21_only,
-                       normsq_w22, norm_w22, normsq_w22_only, norm_w22_only,
-                       norm_null]
+                       normsq_w22, norm_w22, normsq_w22_only, norm_w22_only
+                       ]
 const exportedNormSymbols = [:norm_l2_only,
                              :normsq_w21, :norm_w21, :normsq_w21_only, :norm_w21_only,
-                             :normsq_w22, :norm_w22, :normsq_w22_only, :norm_w22_only,
-                             #:norm_null
+                             :normsq_w22, :norm_w22, :normsq_w22_only, :norm_w22_only
                              ]
 ##
 # End discrete Sobolev norm routines
