@@ -3,7 +3,7 @@ const tolerance = 1e-10
 testgridArchetype = range(0, stop=1, length=testGridLength)
 testGrids = [testgridArchetype, collect(testgridArchetype)]
 
-@testset "Norms, grid type=$(typeof(testgrid))" for testgrid in testGrids
+@testset "Grid type=$(typeof(testgrid))" for testgrid in testGrids
     zerofunc(t) = zero(t)
     constfunc(t) = one(t)
     linfunc(t) = t
