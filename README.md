@@ -6,7 +6,7 @@
 
 ### What is this repository for? ###
 
-* For some applications, the natural way of measuring distance between two vectors or matrices is intrinsically dependent on the grid on which they are defined. In particular, precise estimates for the convergence of a particular method may be stated most simply using such a norm. Of course, these norms are equivalent to the "standard" Euclidean norm for vectors of a fixed length, but a grid-dependent norm will have different stability properties as the number of elements in the vector changes.
+For some applications, the natural way of measuring distance between two vectors or matrices is intrinsically dependent on the grid on which they are defined. In particular, precise estimates for the convergence of a particular method may be stated most simply using such a norm. Of course, these norms are equivalent to the "standard" Euclidean norm for vectors of a fixed length, but a grid-dependent norm will have different stability properties as the number of elements in the vector changes.
 
 ### How do I get set up? ###
 
