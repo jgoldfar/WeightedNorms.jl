@@ -42,7 +42,7 @@ testGrids = [testgridArchetype, collect(testgridArchetype)]
 
     # Other known values
     knownValues = (
-                   (constfunc, WN.norm_l2_only, 1.0),
+                   (constfunc, WN.norm_l2, 1.0),
                    (constfunc, WN.normsq_w21_only, 0.0),
                    (constfunc, WN.normsq_w22_only, 0.0),
                    (constfunc, WN.norm_w21_only, 0.0),
@@ -61,7 +61,7 @@ testGrids = [testgridArchetype, collect(testgridArchetype)]
     end #for
     testOnesMat = ones(testGridLength, testGridLength)
     testZerosMat = zeros(testGridLength, testGridLength)
-    @testset "Matrix Norm, func=$func" for func in [WN.norm_l2_only, WN.norm_l1]
+    @testset "Matrix Norm, func=$func" for func in [WN.norm_l2, WN.norm_l1]
         v1 = @inferred func(testOnesMat, testgrid, testgrid)
         @test isapprox(v1, 1.0)
 

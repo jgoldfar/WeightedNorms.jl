@@ -26,7 +26,7 @@ function normsq_l2(x::Matrix{T}, dx::Real, dt::Real) where {T<:Real}
     v0 * dt * dx
 end
 normsq_l2(x::Matrix, grid1::AbstractRange, grid2::AbstractRange) = normsq_l2(x, step(grid1), step(grid2))
-norm_l2_only(x::Matrix, grid1, grid2) = sqrt(normsq_l2(x, grid1, grid2))
+norm_l2(x::Matrix, grid1, grid2) = sqrt(normsq_l2(x, grid1, grid2))
 
 function norm_l1(x::Matrix{T}, grid1::Vector{T}, grid2::Vector{T}) where {T<:Real}
     xnext, v0 = grid2[1], zero(T)
@@ -58,7 +58,7 @@ norm_l1(x::AbstractMatrix, grid1::AbstractRange, grid2::AbstractRange) = norm_l1
 ##
 
 
-export norm_l2_only, norm_w21_only, norm_w22_only, norm_w21, norm_w22, norm_null
+export norm_l2, norm_w21_only, norm_w22_only, norm_w21, norm_w22, norm_null
 
 function normsq_l2(x::Vector{T}, grid::Vector) where {T<:Real}
     gnext = grid[1]
@@ -76,8 +76,8 @@ function normsq_l2(x::Vector{T}, dx::Real) where {T<:Real}
     end
     v0 * dx
 end
-norm_l2_only(x::Vector, grid::Vector) = sqrt(normsq_l2(x, grid))
-norm_l2_only(x::Vector, dx::Real) = sqrt(normsq_l2(x, dx))
+norm_l2(x::Vector, grid::Vector) = sqrt(normsq_l2(x, grid))
+norm_l2(x::Vector, dx::Real) = sqrt(normsq_l2(x, dx))
 
 ##
 # Begin discrete Sobolev norm routines
@@ -146,7 +146,7 @@ function normsq_w22_only(x::Vector, dx::Real)
         xprev, xcurr, xnext = xcurr, xnext, x[i + 1]
         v0 += abs2(xprev - 2*xcurr + xnext)
     end
-    v0 / (dx * dx * dx)
+    v0 / dx^3
 end
 
 norm_w22_only(x::Vector, grid::Vector) = sqrt(normsq_w22_only(x, grid))
@@ -160,11 +160,11 @@ norm_w22(x::Vector, dx::Real) = sqrt(normsq_w22(x, dx))
 
 #TODO: Either generalize norms to work against any AbstractArray, or call this
 # exportedVectorNorms.
-const exportedNorms = [norm_l2_only,
+const exportedNorms = [norm_l2,
                        normsq_w21, norm_w21, normsq_w21_only, norm_w21_only,
                        normsq_w22, norm_w22, normsq_w22_only, norm_w22_only
                        ]
-const exportedNormSymbols = [:norm_l2_only,
+const exportedNormSymbols = [:norm_l2,
                              :normsq_w21, :norm_w21, :normsq_w21_only, :norm_w21_only,
                              :normsq_w22, :norm_w22, :normsq_w22_only, :norm_w22_only
                              ]
