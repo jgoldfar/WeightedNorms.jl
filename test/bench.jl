@@ -1,23 +1,31 @@
-const pkgbasedir = dirname(dirname(@__FILE__))
-include(joinpath(pkgbasedir, "src", "norms.jl"))
+using WeightedNorms
+
+@static if VERSION < v"0.7-"
+    using Compat: range
+else
+    using Printf
+end
 
 ## Norm benchmarking
-const nsamples = 10
-for len in 2.^(7:10)
-  const x = rand(len)
-  const grid = linspace(0, 1, len)
-  if VERSION >= v"0.4-"
-    const tau = step(grid)
-  else
-    const tau = grid[2] - grid[1]
-  end
-  for func in sobnormsfunc
+const nsamples = 100
+maxNormNameLength = maximum(length(string(s)) for s in WeightedNorms.exportedNormSymbols)
+nExportedNorms = length(WeightedNorms.exportedNormSymbols)
+for len in [2^n for n in 6:10]
+  x = rand(len)
+  grid = range(0, stop=1, length=len)
+  tau = step(grid)
+  tt1 = ones(nExportedNorms)
+  tt2 = ones(nExportedNorms)
+  for (k, func) in enumerate(WeightedNorms.exportedNorms)
     func(x, grid)
     func(x, tau)
     gc()
-    timetaken1 = @elapsed for i in 1:nsamples; func(x, grid); end
+    tt1[k] = @elapsed for i in 1:nsamples; func(x, grid); end
     gc()
-    timetaken2 = @elapsed for i in 1:nsamples; func(x, tau); end
-    @printf "n: %d, func: %s, time 1: %e, time 2: %e, ratio: %f\n" len rpad(func, max(map(length, map(string, sobnormsfunc))...), " ") timetaken1 timetaken2 timetaken1/timetaken2
+    tt2[k] = @elapsed for i in 1:nsamples; func(x, tau); end
+  end
+  for (i, (t1, t2)) in enumerate(zip(tt1, tt2))
+      funci = rpad(string(WeightedNorms.exportedNormSymbols[i]), maxNormNameLength, " ")
+      @printf "n: %d, func: %s, time 1: %e, time 2: %e, grid is: %f x slower\n" len funci t1 t2 t1/t2
   end
 end
