@@ -1,10 +1,6 @@
-if VERSION < v"0.7-"
+@static if VERSION < v"0.7-"
     using Base.Test
-    using Compat
-    const range = Compat.range
-    @static if VERSION < v"0.6-"
-        range{T}(start::T; stop::T=one(T), length::Int = 100) = linspace(start, stop, length)
-    end
+    using Compat: range
 else
     using Test
 end

@@ -1,7 +1,7 @@
 ##
 # Begin general norm routines
 ##
-function normsq_l2{T<:Real}(x::Matrix{T}, grid1::Vector{T}, grid2::Vector{T})
+function normsq_l2(x::Matrix{T}, grid1::Vector{T}, grid2::Vector{T}) where {T<:Real}
     xnext, v0 = grid2[1], zero(T)
     sz1, sz2 = size(x)
     for j in 2:sz2
@@ -15,7 +15,7 @@ function normsq_l2{T<:Real}(x::Matrix{T}, grid1::Vector{T}, grid2::Vector{T})
     end
     v0
 end
-function normsq_l2{T<:Real}(x::Matrix{T}, dx::Real, dt::Real)
+function normsq_l2(x::Matrix{T}, dx::Real, dt::Real) where {T<:Real}
     v0 = zero(T)
     sz1, sz2 = size(x)
     for j in 2:sz2
@@ -28,7 +28,7 @@ end
 normsq_l2(x::Matrix, grid1::AbstractRange, grid2::AbstractRange) = normsq_l2(x, step(grid1), step(grid2))
 norm_l2_only(x::Matrix, grid1, grid2) = sqrt(normsq_l2(x, grid1, grid2))
 
-function norm_l1{T<:Real}(x::Matrix{T}, grid1::Vector{T}, grid2::Vector{T})
+function norm_l1(x::Matrix{T}, grid1::Vector{T}, grid2::Vector{T}) where {T<:Real}
     xnext, v0 = grid2[1], zero(T)
     sz1, sz2 = size(x)
     for j in 2:sz2
@@ -42,7 +42,7 @@ function norm_l1{T<:Real}(x::Matrix{T}, grid1::Vector{T}, grid2::Vector{T})
     end
     return v0
 end
-function norm_l1{T<:Real}(x::Matrix{T}, dx::Real, dt::Real)
+function norm_l1(x::Matrix{T}, dx::Real, dt::Real) where {T<:Real}
     v0 = zero(T)
     sz1, sz2 = size(x)
     for j in 2:sz2
@@ -52,7 +52,7 @@ function norm_l1{T<:Real}(x::Matrix{T}, dx::Real, dt::Real)
     end
     return v0 * dx * dt
 end
-norm_l1{T<:Real}(x::Matrix{T}, grid1::AbstractRange, grid2::AbstractRange) = norm_l1(x, step(grid1), step(grid2))
+norm_l1(x::AbstractMatrix, grid1::AbstractRange, grid2::AbstractRange) = norm_l1(x, step(grid1), step(grid2))
 ##
 # End general norm routines
 ##
@@ -60,7 +60,7 @@ norm_l1{T<:Real}(x::Matrix{T}, grid1::AbstractRange, grid2::AbstractRange) = nor
 
 export norm_l2_only, norm_w21_only, norm_w22_only, norm_w21, norm_w22, norm_null
 
-function normsq_l2{T<:Real}(x::Vector{T}, grid::Vector{T})
+function normsq_l2(x::Vector{T}, grid::Vector) where {T<:Real}
     gnext = grid[1]
     v0 = zero(T)
     for i in 2:length(x)
@@ -69,7 +69,7 @@ function normsq_l2{T<:Real}(x::Vector{T}, grid::Vector{T})
     end
     v0
 end
-function normsq_l2{T<:Real}(x::Vector{T}, dx::Real)
+function normsq_l2(x::Vector{T}, dx::Real) where {T<:Real}
     v0 = zero(T)
     for i in 2:length(x)
         v0 += abs2(x[i])
@@ -83,7 +83,7 @@ norm_l2_only(x::Vector, dx::Real) = sqrt(normsq_l2(x, dx))
 # Begin discrete Sobolev norm routines
 ##
 
-function normsq_w21_only{T<:Real}(x::Vector{T}, grid::Vector{T})
+function normsq_w21_only(x::Vector{T}, grid::Vector) where {T<:Real}
     xnext, gnext, v0 = x[1], grid[1], zero(T)
     for i in 2:length(x)
         xcurr, xnext, gcurr, gnext = xnext, x[i], gnext, grid[i]
@@ -91,7 +91,8 @@ function normsq_w21_only{T<:Real}(x::Vector{T}, grid::Vector{T})
     end
     v0
 end
-function normsq_w21_only{T<:Real}(x::Vector{T}, dx::Real) # Much faster for large (i.e. >512 points.)
+# Below implementation is much faster for large (i.e. >512 points.)
+function normsq_w21_only(x::Vector{T}, dx::Real) where {T<:Real} 
     xnext, v0 = x[1], zero(T)
     for i in 2:length(x)
         xcurr, xnext = xnext, x[i]
@@ -109,7 +110,7 @@ normsq_w21(x::Vector, dx::Real) = normsq_l2(x, dx) + normsq_w21_only(x, dx)
 norm_w21(x::Vector, grid::Vector) = sqrt(normsq_w21(x, grid))
 norm_w21(x::Vector, dx::Real) = sqrt(normsq_w21(x, dx))
 
-function normsq_w22_only{T<:Real}(x::Vector{T}, grid::Vector{T})
+function normsq_w22_only(x::Vector{T}, grid::Vector) where {T<:Real}
     #   Note: to handle the general case with full accuracy, a more involved algorithm
     #   is required, leading this to be quite a bit more computationally intensive...
     nx = length(x)
@@ -139,7 +140,7 @@ function normsq_w22_only(x::Vector, dx::Real)
     xprev, xcurr, xnext = x[1], x[2], x[3]
     v0 = abs2(xprev - 2*xcurr + xnext)
     if nx == 3
-        return v0 / (dx * dx * dx)
+        return v0 / dx^3
     end
     for i in 3:(nx - 1)
         xprev, xcurr, xnext = xcurr, xnext, x[i + 1]

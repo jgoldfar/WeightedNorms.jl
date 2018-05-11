@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](unreleased)
+- Removed: Support for Julia v0.5
 
 ## [0.2.0](2015-09-26)
 - Added: Initial support for efficient discrete difference calculation, currently just l_2 norms
