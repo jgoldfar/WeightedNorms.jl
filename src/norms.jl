@@ -175,4 +175,8 @@ const exportedNormSymbols = [:norm_l2,
 ## Define functions on AbstractRanges using definitions with constant grid spacing
 for fn in exportedNormSymbols
     @eval ($fn)(x::Vector, grid::AbstractRange) = ($fn)(x, step(grid))
+    for T in [Float32, Float64, BigFloat]
+        @eval precompile($fn, (Vector{$T}, $T))
+        @eval precompile($fn, (Vector{$T}, Vector{$T}))
+    end
 end
