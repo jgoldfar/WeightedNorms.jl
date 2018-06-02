@@ -1,0 +1,7 @@
+testfunc1: x*(4*t-1);
+
+load(abs_integrate);
+
+L1Norm: integrate(integrate(abs(testfunc1), x, -1, 1/2), t, 0, 1);
+
+L2Norm: integrate(integrate(abs(testfunc1)^2, x, -1, 1/2), t, 0, 1);
