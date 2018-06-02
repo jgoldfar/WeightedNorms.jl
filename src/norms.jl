@@ -1,18 +1,16 @@
 ##
 # Begin general norm routines
 ##
-function normsq_l2(x::Matrix{T}, grid1::Vector{T}, grid2::Vector{T}) where {T<:Real}
-    xnext, v0 = grid2[1], zero(T)
+function normsq_l2(x::Matrix{T}, grid1::Vector, grid2::Vector) where {T<:Real}
+    v0 = zero(T)
     sz1, sz2 = size(x)
     for j in 2:sz2
-        xcurr, xnext = xnext, grid2[j]
-        dx = xnext - xcurr
-        tnext = grid1[1]
+        dx = grid2[j] - grid2[j-1]
         for i in 2:sz1
-            tcurr, tnext = tnext, grid1[i]
-            v0 += abs2(x[i, j]) * dx * (tnext - tcurr)
+            v0 += abs2(x[i, j]) * dx * (grid1[i] - grid1[i-1])
         end
     end
+
     v0
 end
 function normsq_l2(x::Matrix{T}, dx::Real, dt::Real) where {T<:Real}
@@ -23,34 +21,34 @@ function normsq_l2(x::Matrix{T}, dx::Real, dt::Real) where {T<:Real}
             v0 += abs2(x[i, j])
         end
     end
+
     v0 * dt * dx
 end
 normsq_l2(x::Matrix, grid1::AbstractRange, grid2::AbstractRange) = normsq_l2(x, step(grid1), step(grid2))
 norm_l2(x::Matrix, grid1, grid2) = sqrt(normsq_l2(x, grid1, grid2))
 
-function norm_l1(x::Matrix{T}, grid1::Vector{T}, grid2::Vector{T}) where {T<:Real}
-    xnext, v0 = grid2[1], zero(T)
+function norm_l1(x::Matrix{T}, grid1::Vector, grid2::Vector) where {T<:Real}
+    v0 = zero(T)
     sz1, sz2 = size(x)
     for j in 2:sz2
-        xcurr, xnext = xnext, grid2[j]
-        dx = xnext - xcurr
-        tnext = grid1[1]
+        dx = grid2[j] - grid2[j-1]
         for i in 2:sz1
-            tcurr, tnext = tnext, grid1[i]
-            @inbounds v0 += abs(x[i, j]) * dx * (tnext - tcurr)
+            v0 += abs(x[i, j]) * dx * (grid1[i] - grid1[i-1])
         end
     end
-    return v0
+
+    v0
 end
 function norm_l1(x::Matrix{T}, dx::Real, dt::Real) where {T<:Real}
     v0 = zero(T)
     sz1, sz2 = size(x)
     for j in 2:sz2
         for i in 2:sz1
-            @inbounds v0 += abs(x[i, j])
+            v0 += abs(x[i, j])
         end
     end
-    return v0 * dx * dt
+
+    v0 * dx * dt
 end
 norm_l1(x::AbstractMatrix, grid1::AbstractRange, grid2::AbstractRange) = norm_l1(x, step(grid1), step(grid2))
 ##
@@ -61,20 +59,16 @@ norm_l1(x::AbstractMatrix, grid1::AbstractRange, grid2::AbstractRange) = norm_l1
 export norm_l2, norm_w21_only, norm_w22_only, norm_w21, norm_w22, norm_null
 
 function normsq_l2(x::Vector{T}, grid::Vector) where {T<:Real}
-    gnext = grid[1]
+    gnext = first(grid)
     v0 = zero(T)
-    for i in 2:length(x)
+    for i in Iterators.drop(eachindex(x), 1)
         gcurr, gnext = gnext, grid[i]
         v0 += abs2(x[i]) * (gnext - gcurr)
     end
     v0
 end
 function normsq_l2(x::Vector{T}, dx::Real) where {T<:Real}
-    v0 = zero(T)
-    for i in 2:length(x)
-        v0 += abs2(x[i])
-    end
-    v0 * dx
+    sum(abs2, Iterators.drop(x, 1))*dx
 end
 norm_l2(x::Vector, grid::Vector) = sqrt(normsq_l2(x, grid))
 norm_l2(x::Vector, dx::Real) = sqrt(normsq_l2(x, dx))
@@ -84,17 +78,17 @@ norm_l2(x::Vector, dx::Real) = sqrt(normsq_l2(x, dx))
 ##
 
 function normsq_w21_only(x::Vector{T}, grid::Vector) where {T<:Real}
-    xnext, gnext, v0 = x[1], grid[1], zero(T)
-    for i in 2:length(x)
+    xnext, gnext, v0 = first(x), first(grid), zero(T)
+    for i in Iterators.drop(eachindex(x), 1)
         xcurr, xnext, gcurr, gnext = xnext, x[i], gnext, grid[i]
         v0 += abs2(xnext - xcurr) / (gnext - gcurr)
     end
     v0
 end
 # Below implementation is much faster for large (i.e. >512 points.)
-function normsq_w21_only(x::Vector{T}, dx::Real) where {T<:Real} 
-    xnext, v0 = x[1], zero(T)
-    for i in 2:length(x)
+function normsq_w21_only(x::Vector{T}, dx::Real) where {T<:Real}
+    xnext, v0 = first(x), zero(T)
+    for i in Iterators.drop(eachindex(x), 1)
         xcurr, xnext = xnext, x[i]
         v0 += abs2(xnext - xcurr)
     end
