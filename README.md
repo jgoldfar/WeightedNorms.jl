@@ -1,6 +1,7 @@
 # WeightedNorms
 
-[![Build Status](https://travis-ci.org/jgoldfar/WeightedNorms.jl.svg?branch=master)](https://travis-ci.org/jgoldfar/WeightedNorms.jl)
+[![Build Status (Linux/OSX)](https://travis-ci.org/jgoldfar/WeightedNorms.jl.svg?branch=master)](https://travis-ci.org/jgoldfar/WeightedNorms.jl)
+[![Build status (Windows)](https://ci.appveyor.com/api/projects/status/tcaxjrncqcarelc3?svg=true)](https://ci.appveyor.com/project/jgoldfar/weightednorms-jl)
 [![Coverage Status](https://coveralls.io/repos/jgoldfar/WeightedNorms.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/jgoldfar/WeightedNorms.jl?branch=master)
 [![codecov.io](http://codecov.io/github/jgoldfar/WeightedNorms.jl/coverage.svg?branch=master)](http://codecov.io/github/jgoldfar/WeightedNorms.jl?branch=master)
 
