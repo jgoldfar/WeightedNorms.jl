@@ -6,8 +6,14 @@ else
 end
 
 using WeightedNorms
-if !isdefined(:WN)
-    const WN = WeightedNorms
+@static if VERSION >= v"1.0-"
+    if !(@isdefined WN)
+	const WN = WeightedNorms
+    end
+else
+    if !isdefined(:WN)
+        const WN = WeightedNorms
+    end
 end
 
 const testGridLength = 100
