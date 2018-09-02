@@ -8,7 +8,7 @@ end
 using WeightedNorms
 @static if VERSION >= v"1.0-"
     if !(@isdefined WN)
-	const WN = WeightedNorms
+        const WN = WeightedNorms
     end
 else
     if !isdefined(:WN)
